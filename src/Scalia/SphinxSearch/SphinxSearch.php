@@ -125,7 +125,7 @@ class SphinxSearch {
   public function get($respect_sort_order = false)
   {
     $this->_total_count = 0;
-    $result             = $this->_connection->query($this->_search_string, $this->_index_name);
+    $result             = $temp = $this->_connection->query($this->_search_string, $this->_index_name);
 
     // Process results.
     if ($result)
@@ -164,6 +164,11 @@ class SphinxSearch {
       }
     }
 
+    if ($this->_connection->anchor) {
+      foreach ($result as &$val) {
+        $val['geodist'] = $temp['matches'][$val['id']]['attrs']['@geodist'];
+      }
+    }
     if($respect_sort_order)
     {
       if(isset($matchids))
